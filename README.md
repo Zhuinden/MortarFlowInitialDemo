@@ -21,7 +21,7 @@ What is **not** done:
 
 - ViewPresenters aren't used yet, and as such registration to the BundleServiceRunner is missing (onLoad / onSave from Mortar)
 
-- Other possible issues that could arise while trying to make ViewPresenters work, although PathContext is the biggest magic and that (almost) works so it can't be *that* bad
+- Other possible issues that could arise while trying to make ViewPresenters work, although PathContext is the biggest magic and that works so it can't be *that* bad
 
 Okay, so the steps are pretty much the following:
 
@@ -155,8 +155,6 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
     }
     
 4.) [FLOW] Once you've set up Mortar, you're ready to rumble. You need to set up all the **...**ed areas for Flow to function properly. Most of this is based on Samples.
-
-**NOTE:** While I managed to force the first Path to actually get a `PathContext`, it seems to be the same "root" as the container, rather than getting `FirstPath`. So currently calling `FirstPath firstPath = Path.get(getContext());` crashes, but on the second view, calling `SecondPath secondPath = Path.get(getContext());` does not.  So apparently the initial Path isn't initialized properly, I'll try to figure out a way to hack that to work later.
 
     public class MainActivity
             extends AppCompatActivity
@@ -348,7 +346,5 @@ So that's the first part for today. To-do list:
 - ViewPresenters
 
 - Module + Components for providing data
-
-- Fixing the goddamn "first path root" bug, it is already an achievement that it's a PathContext in the first place
 
 - Make new guide once those are actually done
