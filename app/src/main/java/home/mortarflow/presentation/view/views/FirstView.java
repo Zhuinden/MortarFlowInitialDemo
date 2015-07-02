@@ -3,6 +3,7 @@ package home.mortarflow.presentation.view.views;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -21,6 +22,8 @@ import home.mortarflow.presentation.view.paths.SecondPath;
  * Created by Zhuinden on 2015.07.01..
  */
 public class FirstView extends LinearLayout {
+    public static final String TAG = FirstView.class.getSimpleName();
+
     @OnClick(R.id.path_first_button)
     public void onClickButton() {
         Flow.get(this).set(new SecondPath());
@@ -48,8 +51,9 @@ public class FirstView extends LinearLayout {
         super.onFinishInflate();
         ButterKnife.bind(this);
         InjectorService.get(getContext()).getInjector().inject(this);
-        System.out.println("CONTEXT: " + this.getContext() + " " + this.getContext().hashCode());
-        //FirstPath firstPath = Path.get(this.getContext()); //BROKEN, MUST FIX
+        Log.d(TAG, "FIRST VIEW CONTEXT: " + this.getContext() + " " + this.getContext().hashCode());
+        FirstPath firstPath = Path.get(this.getContext());
+        Log.d(TAG, "First Path Parameter: " + firstPath.parameter);
     }
 
     @Override

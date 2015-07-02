@@ -16,6 +16,7 @@ public class CustomApplication
     @Override
     public void onCreate() {
         super.onCreate();
+        ApplicationHolder.INSTANCE.setApplication(this);
     }
 
     @Override

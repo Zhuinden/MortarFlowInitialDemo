@@ -3,6 +3,7 @@ package home.mortarflow.presentation.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class MainActivity
 
         //FLOW PATH INIT
         PathContext pathContext = PathContext.root(this);
-        System.out.println("ROOT PATH CONTEXT IS: " + pathContext.toString() + " " + pathContext.hashCode());
+        Log.d(TAG, "ROOT PATH CONTEXT IS: " + pathContext.toString() + " " + pathContext.hashCode());
         framePathContainerView = (MortarScreenSwitcherFrame) LayoutInflater.from(this)
                 .cloneInContext(pathContext)
                 .inflate(R.layout.activity_main, null);
