@@ -8,7 +8,9 @@ import android.widget.LinearLayout;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import flow.path.Path;
 import home.mortarflow.application.InjectorService;
+import home.mortarflow.presentation.view.paths.SecondPath;
 
 /**
  * Created by Zhuinden on 2015.07.02..
@@ -34,7 +36,10 @@ public class SecondView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        System.out.println("SECOND VIEW CONTEXT IS: " + getContext().getClass().toString());
+        System.out.println("SECOND VIEW CONTEXT IS: " + getContext().toString() + " " + getContext()
+                .hashCode()) ;
         InjectorService.get(getContext()).getInjector().inject(this);
+        SecondPath secondPath = Path.get(getContext());
+        System.out.println("SECOND PATH: " + secondPath);
     }
 }

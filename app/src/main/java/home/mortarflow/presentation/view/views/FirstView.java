@@ -48,6 +48,8 @@ public class FirstView extends LinearLayout {
         super.onFinishInflate();
         ButterKnife.bind(this);
         InjectorService.get(getContext()).getInjector().inject(this);
+        System.out.println("CONTEXT: " + this.getContext() + " " + this.getContext().hashCode());
+        //FirstPath firstPath = Path.get(this.getContext()); //BROKEN, MUST FIX
     }
 
     @Override

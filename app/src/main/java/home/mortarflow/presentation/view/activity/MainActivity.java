@@ -46,6 +46,7 @@ public class MainActivity
 
         //FLOW PATH INIT
         PathContext pathContext = PathContext.root(this);
+        System.out.println("ROOT PATH CONTEXT IS: " + pathContext.toString() + " " + pathContext.hashCode());
         framePathContainerView = (MortarScreenSwitcherFrame) LayoutInflater.from(this)
                 .cloneInContext(pathContext)
                 .inflate(R.layout.activity_main, null);

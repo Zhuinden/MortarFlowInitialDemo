@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import flow.path.Path;
 import flow.path.PathContainer;
 import flow.path.PathContext;
 import flow.path.PathContextFactory;
+import home.mortarflow.presentation.view.paths.FirstPath;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -23,6 +26,8 @@ import static flow.Flow.Direction.REPLACE;
  * Uses {@link PathContext} to allow customized sub-containers.
  */
 public class SimplePathContainer extends PathContainer {
+    private static final String TAG = SimplePathContainer.class.getSimpleName();
+
     private static final Map<Class, Integer> PATH_LAYOUT_CACHE = new LinkedHashMap<>();
     private final PathContextFactory contextFactory;
 
@@ -34,23 +39,27 @@ public class SimplePathContainer extends PathContainer {
     @Override protected void performTraversal(final ViewGroup containerView,
                                               final TraversalState traversalState, final Flow.Direction direction,
                                               final Flow.TraversalCallback callback) {
-
         final PathContext context;
         final PathContext oldPath;
         if (containerView.getChildCount() > 0) {
+            Log.d(TAG, "Container View Child count was > 0");
             oldPath = PathContext.get(containerView.getChildAt(0).getContext());
         } else {
+            Log.d(TAG, "Container View Child Count was == 0");
             oldPath = PathContext.root(containerView.getContext());
         }
-
+        Log.d(TAG, "Old Path is: " + oldPath);
         Path to = traversalState.toPath();
+        Log.d(TAG, "TO path is: " + to);
 
         View newView;
         context = PathContext.create(oldPath, to, contextFactory);
+        Log.d(TAG, "TO path layout pathcontext is " + context);
         int layout = getLayout(to);
         newView = LayoutInflater.from(context)
                 .cloneInContext(context)
                 .inflate(layout, containerView, false);
+        Log.d(TAG, "NEW VIEW context: " + newView.getContext()); //TODO: First View's path is the ROOT or some random PathContext with NO LOCALSCREENWRAPPER! Why?
 
         View fromView = null;
         if (traversalState.fromPath() != null) {
