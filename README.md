@@ -1,5 +1,5 @@
 # MortarFlowInitialDemo
-This is the v0.3 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
+This is the v0.5 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
 
 v0.2 - What is done:
 
@@ -21,9 +21,17 @@ v0.3 - What is done:
 
 - ViewPresenters are used now, and as such registration to the BundleServiceRunner is done (onLoad / onSave from Mortar)
 
-What is NOT DONE:
+v0.5 - What is done:
 
-- The component must be bound to the Mortar Scope, because currently the component is stored in the PresenterModule to survive configuration change. It must be within the Mortar Scope as a service provided by the ScreenScoper.
+- The component is now bound to the Mortar Scope (thanks to "BasePath" that contains the component factory method)
+
+- Path is now responsible for component creation
+ 
+WHAT TO DO NEXT:
+
+- Why do I need to keep track of the presenter in the module? That shouldn't be necessary if I re-use the same module/component thanks to the Mortar Scope. Odd.
+
+- There must be a way to make the Path classes a bit less monolithic.
 
 NOTE:
 
