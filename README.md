@@ -19,7 +19,7 @@ v0.3 - What is done:
 
 - Using modules/components to provide data for the custom views
 
-- ViewPresenters are used now, and as such registration to the BundleServiceRunner is missing (onLoad / onSave from Mortar)
+- ViewPresenters are used now, and as such registration to the BundleServiceRunner is done (onLoad / onSave from Mortar)
 
 What is NOT DONE:
 
