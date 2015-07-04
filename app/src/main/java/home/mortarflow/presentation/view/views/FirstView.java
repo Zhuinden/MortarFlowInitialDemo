@@ -13,11 +13,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import flow.path.Path;
 import home.mortarflow.R;
-import home.mortarflow.application.InjectorService;
-import home.mortarflow.presentation.view.paths.DaggerFirstPath_FirstViewComponent;
 import home.mortarflow.presentation.view.paths.FirstPath;
+import home.mortarflow.utils.custom_path.DaggerService;
 
 /**
  * Created by Zhuinden on 2015.07.01..
@@ -67,12 +65,7 @@ public class FirstView
 
     private void init(Context context) {
         try { //TODO: fix rendering preview
-            FirstPath firstPath = Path.get(context);
-            int parameter = firstPath.parameter;
-            FirstPath.FirstViewComponent firstViewComponent = DaggerFirstPath_FirstViewComponent.builder()
-                    .applicationComponent(InjectorService.get(context).getInjector())
-                    .firstViewModule(new FirstPath.FirstViewModule(parameter))
-                    .build();
+            FirstPath.FirstViewComponent firstViewComponent = DaggerService.getComponent(context);
             firstViewComponent.inject(this);
         } catch(java.lang.UnsupportedOperationException e) {
             Log.wtf(TAG, "This happens only in rendering.");
@@ -84,7 +77,6 @@ public class FirstView
         super.onFinishInflate();
         Log.d(TAG, "On Finished Inflate: " + this.toString());
         ButterKnife.bind(this);
-        //InjectorService.get(context).getInjector().inject(this);
         dataDisplay.setText(data);
     }
 

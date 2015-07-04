@@ -8,19 +8,19 @@ import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import flow.Flow;
-import flow.path.Path;
 import home.mortarflow.R;
+import home.mortarflow.application.InjectorService;
 import home.mortarflow.injection.components.ApplicationComponent;
 import home.mortarflow.injection.scope.ViewScope;
 import home.mortarflow.presentation.view.views.FirstView;
-import home.mortarflow.utils.flow.Layout;
+import home.mortarflow.utils.custom_path.BasePath;
 import mortar.ViewPresenter;
 
 /**
  * Created by Zhuinden on 2015.07.01..
  */
-@Layout(R.layout.path_first)
-public class FirstPath extends Path {
+public class FirstPath
+        extends BasePath {
     public final int parameter;
 
     public FirstPath(int parameter) {
@@ -48,11 +48,27 @@ public class FirstPath extends Path {
         return result;
     }
 
+    @Override
+    public int getLayout() {
+        return R.layout.path_first;
+    }
+
+    @Override
+    public FirstViewComponent createComponent() {
+        FirstPath.FirstViewComponent firstViewComponent = DaggerFirstPath_FirstViewComponent.builder()
+                .applicationComponent(InjectorService.obtain())
+                .firstViewModule(new FirstPath.FirstViewModule(parameter))
+                .build();
+        return firstViewComponent;
+    }
+
     @ViewScope //needed
     @Component(dependencies = {ApplicationComponent.class}, modules = {FirstViewModule.class})
-    public static interface FirstViewComponent
+    public interface FirstViewComponent
             extends ApplicationComponent {
         String data();
+
+        FirstViewPresenter firstViewPresenter();
 
         void inject(FirstView firstView);
     }
@@ -61,6 +77,8 @@ public class FirstPath extends Path {
     public static class FirstViewModule {
         private int parameter;
 
+        private FirstViewPresenter firstViewPresenter;
+
         public FirstViewModule(int parameter) {
             this.parameter = parameter;
         }
@@ -68,6 +86,14 @@ public class FirstPath extends Path {
         @Provides
         public String data(Context context) {
             return context.getString(parameter);
+        }
+
+        @Provides
+        public FirstViewPresenter firstViewPresenter() {
+            if(firstViewPresenter == null) { //TODO: I still don't know why this is necessary, lol.
+                this.firstViewPresenter = new FirstViewPresenter();
+            }
+            return firstViewPresenter;
         }
     }
 

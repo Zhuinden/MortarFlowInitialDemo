@@ -4,22 +4,20 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import flow.Flow;
 import flow.path.Path;
 import flow.path.PathContainer;
 import flow.path.PathContext;
 import flow.path.PathContextFactory;
-import home.mortarflow.application.ApplicationHolder;
-import home.mortarflow.presentation.view.paths.FirstPath;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import home.mortarflow.utils.custom_path.BasePath;
 
 import static flow.Flow.Direction.REPLACE;
 
@@ -58,7 +56,7 @@ public class SimplePathContainer
         context = PathContext.create(oldPath, to, contextFactory);
         Log.d(TAG, "TO path layout pathcontext is " + context);
 
-        int layout = getLayout(to);
+        int layout = ((BasePath) to).getLayout(); //removed annotation
         newView = LayoutInflater.from(context.getApplicationContext()) //fixed first path error
                 .cloneInContext(context)
                 .inflate(layout, containerView, false);

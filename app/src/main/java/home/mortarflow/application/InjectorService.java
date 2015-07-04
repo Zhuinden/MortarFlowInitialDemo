@@ -5,7 +5,6 @@ import android.content.Context;
 import home.mortarflow.injection.components.ApplicationComponent;
 import home.mortarflow.injection.components.DaggerApplicationComponent;
 import home.mortarflow.injection.modules.application.AppContextModule;
-import home.mortarflow.injection.modules.application.presentation.PresenterModule;
 import home.mortarflow.injection.subcomponents.application.AppDataComponent;
 import home.mortarflow.injection.subcomponents.application.AppDomainComponent;
 import home.mortarflow.injection.subcomponents.application.AppPresentationComponent;
@@ -15,8 +14,7 @@ import home.mortarflow.injection.subcomponents.application.DaggerAppDataComponen
 import home.mortarflow.injection.subcomponents.application.DaggerAppDomainComponent;
 import home.mortarflow.injection.subcomponents.application.DaggerAppPresentationComponent;
 import home.mortarflow.injection.subcomponents.application.DaggerAppUtilsComponent;
-import home.mortarflow.injection.subcomponents.application.presentation.DaggerPresenterComponent;
-import home.mortarflow.injection.subcomponents.application.presentation.PresenterComponent;
+import mortar.MortarScope;
 
 /**
  * Created by Zhuinden on 2015.07.01..
@@ -28,14 +26,9 @@ public class InjectorService {
 
     InjectorService(CustomApplication customApplication) {
         AppContextModule appContextModule = new AppContextModule(customApplication);
-        PresenterModule presenterModule = new PresenterModule();
-        PresenterComponent presenterComponent = DaggerPresenterComponent.builder()
-                .presenterModule(presenterModule)
-                .build();
         AppDataComponent appDataComponent = DaggerAppDataComponent.builder().build();
         AppDomainComponent appDomainComponent = DaggerAppDomainComponent.builder().build();
         AppPresentationComponent appPresentationComponent = DaggerAppPresentationComponent.builder()
-                .presenterComponent(presenterComponent)
                 .build();
         AppUtilsComponent appUtilsComponent = DaggerAppUtilsComponent.builder().build();
         applicationComponent = DaggerApplicationComponent.builder()
@@ -57,5 +50,10 @@ public class InjectorService {
         //this is needed otherwise the compiler is whining. -_-
         //noinspection ResourceType
         return (InjectorService) context.getSystemService(TAG);
+    }
+
+    public static ApplicationComponent obtain() {
+        return ((InjectorService) MortarScope.getScope(ApplicationHolder.INSTANCE.getApplication())
+                .getService(TAG)).getInjector();
     }
 }

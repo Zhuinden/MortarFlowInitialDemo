@@ -1,13 +1,14 @@
 package home.mortarflow.utils.mortarflow;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import home.mortarflow.utils.custom_path.BasePath;
+import home.mortarflow.utils.custom_path.DaggerService;
 import mortar.MortarScope;
 
 import static java.lang.String.format;
@@ -27,7 +28,7 @@ public class ScreenScoper {
 
     public MortarScope getScreenScope(Context context, String name, Object screen) {
         MortarScope parentScope = MortarScope.getScope(context);
-        return getScreenScope(context.getResources(), parentScope, name, screen);
+        return getScreenScope(parentScope, name, screen);
     }
 
     /**
@@ -35,22 +36,26 @@ public class ScreenScoper {
      * WithModuleFactory} or {@link WithModule} annotation. Note that scopes are also created
      * for unannotated screens.
      */
-    public MortarScope getScreenScope(Resources resources, MortarScope parentScope, final String name,
-                                      final Object screen) {
-        ModuleFactory moduleFactory = getModuleFactory(screen);
-        Object[] childModule;
-        if (moduleFactory != NO_FACTORY) {
-            childModule = new Object[]{ moduleFactory.createDaggerModule(screen) };
-        } else {
+    public MortarScope getScreenScope(MortarScope parentScope, final String name, final Object screen) {
+        //ModuleFactory moduleFactory = getModuleFactory(screen);
+        //Object[] childModule;
+        //if (moduleFactory != NO_FACTORY) {
+        //childModule = new Object[]{ moduleFactory.createDaggerModule(screen) };
+        //} else {
             // We need every screen to have a scope, so that anything it injects is scoped.  We need
             // this even if the screen doesn't declare a module, because Dagger allows injection of
             // objects that are annotated even if they don't appear in a module.
-            childModule = new Object[0];
-        }
+        //childModule = new Object[0];
+        //}
+
+        //if(!(screen instanceof HasComponent)) {
+        //  throw new IllegalArgumentException("The path must now provide a component of its own.");
+        //}
 
         MortarScope childScope = parentScope.findChild(name);
         if (childScope == null) {
-            childScope = parentScope.buildChild()
+            BasePath basePath = (BasePath) screen;
+            childScope = parentScope.buildChild().withService(DaggerService.TAG, basePath.createComponent())
                     //.withService(ObjectGraphService.SERVICE_NAME,
 //                            ObjectGraphService.create(parentScope, childModule))
                     .build(name);

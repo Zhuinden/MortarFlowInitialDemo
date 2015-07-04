@@ -6,15 +6,21 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.LinearLayout;
 
+import javax.inject.Inject;
+
 import flow.path.Path;
-import home.mortarflow.application.InjectorService;
 import home.mortarflow.presentation.view.paths.SecondPath;
+import home.mortarflow.utils.custom_path.DaggerService;
 
 /**
  * Created by Zhuinden on 2015.07.02..
  */
-public class SecondView extends LinearLayout {
+public class SecondView
+        extends LinearLayout {
     public static final String TAG = SecondView.class.getSimpleName();
+
+    @Inject
+    public SecondPath.SecondViewPresenter secondViewPresenter;
 
     public SecondView(Context context) {
         super(context);
@@ -38,7 +44,12 @@ public class SecondView extends LinearLayout {
     }
 
     private void init(Context context) {
-        InjectorService.get(context).getInjector().inject(this);
+        try { //TODO: fix rendering preview
+            SecondPath.SecondViewComponent secondViewComponent = DaggerService.getComponent(context);
+            secondViewComponent.inject(this);
+        } catch(java.lang.UnsupportedOperationException e) {
+            Log.wtf(TAG, "This happens only in rendering.");
+        }
         SecondPath secondPath = Path.get(context);
         Log.d(TAG, "SECOND PATH: " + secondPath);
     }
@@ -52,12 +63,16 @@ public class SecondView extends LinearLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        //presenter.takeView(this);
+        if(secondViewPresenter != null) {
+            secondViewPresenter.takeView(this);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        //presenter.dropView(this);
+        if(secondViewPresenter != null) {
+            secondViewPresenter.dropView(this);
+        }
         super.onDetachedFromWindow();
     }
 }
