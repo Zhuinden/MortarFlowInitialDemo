@@ -300,6 +300,50 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
 So this is just a Path subclass with its own HashCode and Equals implementation, and it can get parameters if you want.
 
 6.) [FLOW+MORTAR] Use the Flow Path to manipulate Flow to reach a particular state of the app, while use Mortar to access the Services in a given scope.
+    
+    public class FirstView extends LinearLayout {
+        public static final String TAG = FirstView.class.getSimpleName();
+    
+        @OnClick(R.id.path_first_button)
+        public void onClickButton() {
+            Flow.get(this).set(new SecondPath());
+        }
+    
+        public FirstView(Context context) {
+            super(context);
+        }
+    
+        public FirstView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+    
+        public FirstView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+    
+        @TargetApi(21)
+        public FirstView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+    
+        @Override
+        protected void onFinishInflate() {
+            super.onFinishInflate();
+            ButterKnife.bind(this);
+            InjectorService.get(getContext()).getInjector().inject(this);
+            Log.d(TAG, "FIRST VIEW CONTEXT: " + this.getContext() + " " + this.getContext().hashCode());
+            FirstPath firstPath = Path.get(this.getContext());
+            Log.d(TAG, "First Path Parameter: " + firstPath.parameter);
+        }
+    
+        @Override
+        protected void onDetachedFromWindow() {
+            super.onDetachedFromWindow();
+            ButterKnife.unbind(this);
+        }
+    }
+    
+and
 
     public class SecondView extends LinearLayout {
         public SecondView(Context context) {
