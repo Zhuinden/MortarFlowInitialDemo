@@ -1,7 +1,7 @@
 # MortarFlowInitialDemo
-This is the v0.2 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
+This is the v0.3 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
 
-What is done:
+v0.2 - What is done:
 
 - It literally has just two Paths, so it's not confusing as heck
 
@@ -15,13 +15,19 @@ What is done:
 
 - Some basic Dagger2 stuff is set up for example, nothing special really
 
-What is **not** done:
+v0.3 - What is done:
 
 - Still need to start using modules/components to provide data for the custom views, that is not done at all
 
-- ViewPresenters aren't used yet, and as such registration to the BundleServiceRunner is missing (onLoad / onSave from Mortar)
+- ViewPresenters are used now, and as such registration to the BundleServiceRunner is missing (onLoad / onSave from Mortar)
 
-- Other possible issues that could arise while trying to make ViewPresenters work, although PathContext is the biggest magic and that works so it can't be *that* bad
+What is NOT DONE:
+
+- The component must be bound to the Mortar Scope, because currently the component is stored in the PresenterModule to survive configuration change. It must be within the Mortar Scope as a service provided by the ScreenScoper.
+
+NOTE:
+
+ - There's a bunch of weird try-catch null-checks in the FirstView to make previewing the layout work, because otherwise the IDE falls apart with exceptions due to the `context.getSystemService()` call. Seriously.
 
 Okay, so the steps are pretty much the following:
 
