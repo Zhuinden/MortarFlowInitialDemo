@@ -111,7 +111,6 @@ public class FirstPath
             Log.d(TAG, "On Save called: " + toString());
             FirstView firstView = getView();
             outState.putString("input", firstView.getInput());
-            Log.d(TAG, "onSave called");
         }
 
         @Override

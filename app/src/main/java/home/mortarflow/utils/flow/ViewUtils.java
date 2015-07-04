@@ -6,7 +6,7 @@ import android.view.ViewTreeObserver;
 /**
  * Created by Zhuinden on 2015.07.01..
  */
-public final class Utils {
+public final class ViewUtils {
     public interface OnMeasuredCallback {
         void onMeasured(View view, int width, int height);
     }
@@ -34,6 +34,6 @@ public final class Utils {
         });
     }
 
-    private Utils() {
+    private ViewUtils() {
     }
 }

@@ -38,7 +38,6 @@ public class FirstView
 
     @OnClick(R.id.path_first_button)
     public void onClickButton() {
-        //Flow.get(this).set(new SecondPath());
         firstViewPresenter.goToNextActivity();
     }
 

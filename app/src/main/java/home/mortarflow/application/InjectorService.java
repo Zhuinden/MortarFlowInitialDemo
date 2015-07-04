@@ -5,6 +5,7 @@ import android.content.Context;
 import home.mortarflow.injection.components.ApplicationComponent;
 import home.mortarflow.injection.components.DaggerApplicationComponent;
 import home.mortarflow.injection.modules.application.AppContextModule;
+import home.mortarflow.injection.subcomponents.application.AppContextComponent;
 import home.mortarflow.injection.subcomponents.application.AppDataComponent;
 import home.mortarflow.injection.subcomponents.application.AppDomainComponent;
 import home.mortarflow.injection.subcomponents.application.AppPresentationComponent;
@@ -26,15 +27,16 @@ public class InjectorService {
 
     InjectorService(CustomApplication customApplication) {
         AppContextModule appContextModule = new AppContextModule(customApplication);
+        AppContextComponent appContextComponent = DaggerAppContextComponent.builder()
+                .appContextModule(appContextModule)
+                .build();
         AppDataComponent appDataComponent = DaggerAppDataComponent.builder().build();
         AppDomainComponent appDomainComponent = DaggerAppDomainComponent.builder().build();
         AppPresentationComponent appPresentationComponent = DaggerAppPresentationComponent.builder()
                 .build();
         AppUtilsComponent appUtilsComponent = DaggerAppUtilsComponent.builder().build();
         applicationComponent = DaggerApplicationComponent.builder()
-                .appContextComponent(DaggerAppContextComponent.builder()
-                        .appContextModule(appContextModule)
-                        .build())
+                .appContextComponent(appContextComponent)
                 .appDataComponent(appDataComponent)
                 .appDomainComponent(appDomainComponent)
                 .appPresentationComponent(appPresentationComponent)
