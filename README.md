@@ -21,11 +21,15 @@ v0.3 - What is done:
 
 - ViewPresenters are used now, and as such registration to the BundleServiceRunner is done (onLoad / onSave from Mortar)
 
-v0.5 - What is done:
+v0.4 - What is done:
 
 - The component is now bound to the Mortar Scope (thanks to "BasePath" that contains the component factory method)
 
 - Path is now responsible for component creation
+ 
+v0.5 - What is done:
+
+- Removed unnecessary code from screen scoper and some other stuff.
  
 WHAT TO DO NEXT:
 
