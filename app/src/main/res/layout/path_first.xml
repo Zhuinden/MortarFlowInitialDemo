@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <home.mortarflow.presentation.view.views.FirstView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Hello from FIRST path!"/>
-    <Button
-        android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="Hello from FIRST path!" />
+
+    <TextView
+        android:id="@+id/path_first_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:minEms="16" />
+
+    <EditText
+        android:id="@+id/path_first_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minEms="16"
+        android:gravity="center"
+        android:hint="Data to load and save in presenter." />
+
+    <Button
         android:id="@+id/path_first_button"
-        android:text="GO TO NEXT PATH"
-        />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="GO TO NEXT PATH" />
 </home.mortarflow.presentation.view.views.FirstView>

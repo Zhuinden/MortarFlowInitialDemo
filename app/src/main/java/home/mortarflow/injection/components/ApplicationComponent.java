@@ -8,7 +8,6 @@ import home.mortarflow.injection.subcomponents.application.AppDomainComponent;
 import home.mortarflow.injection.subcomponents.application.AppPresentationComponent;
 import home.mortarflow.injection.subcomponents.application.AppUtilsComponent;
 import home.mortarflow.presentation.view.activity.MainActivity;
-import home.mortarflow.presentation.view.views.FirstView;
 import home.mortarflow.presentation.view.views.SecondView;
 
 /**
@@ -20,7 +19,7 @@ public interface ApplicationComponent
         extends AppContextComponent, AppDataComponent, AppDomainComponent, AppPresentationComponent, AppUtilsComponent {
     void inject(MainActivity mainActivity);
 
-    void inject(FirstView firstView);
+    //void inject(FirstView firstView); //no longer needed, has its own component
 
     void inject(SecondView secondView);
 }

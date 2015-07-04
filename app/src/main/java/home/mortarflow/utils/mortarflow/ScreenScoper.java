@@ -2,10 +2,12 @@ package home.mortarflow.utils.mortarflow;
 
 import android.content.Context;
 import android.content.res.Resources;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import mortar.MortarScope;
 
 import static java.lang.String.format;
@@ -16,7 +18,7 @@ import static java.lang.String.format;
  */
 public class ScreenScoper {
     private static final ModuleFactory NO_FACTORY = new ModuleFactory() {
-        @Override protected Object createDaggerModule(Resources resources, Object screen) {
+        @Override protected Object createDaggerModule(Object screen) {
             throw new UnsupportedOperationException();
         }
     };
@@ -38,7 +40,7 @@ public class ScreenScoper {
         ModuleFactory moduleFactory = getModuleFactory(screen);
         Object[] childModule;
         if (moduleFactory != NO_FACTORY) {
-            childModule = new Object[]{ moduleFactory.createDaggerModule(resources, screen) };
+            childModule = new Object[]{ moduleFactory.createDaggerModule(screen) };
         } else {
             // We need every screen to have a scope, so that anything it injects is scoped.  We need
             // this even if the screen doesn't declare a module, because Dagger allows injection of
@@ -138,10 +140,14 @@ public class ScreenScoper {
             this.moduleConstructor = moduleConstructor;
         }
 
-        @Override protected Object createDaggerModule(Resources resources, Object ignored) {
+        @Override protected Object createDaggerModule(Object ignored) {
             try {
                 return moduleConstructor.newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch(IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch(InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -154,10 +160,14 @@ public class ScreenScoper {
             this.moduleConstructor = moduleConstructor;
         }
 
-        @Override protected Object createDaggerModule(Resources resources, Object screen) {
+        @Override protected Object createDaggerModule(Object screen) {
             try {
                 return moduleConstructor.newInstance(screen);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch(IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch(InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }

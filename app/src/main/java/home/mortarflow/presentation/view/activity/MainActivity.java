@@ -5,14 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import flow.Flow;
 import flow.FlowDelegate;
 import flow.History;
@@ -21,7 +18,6 @@ import flow.path.PathContext;
 import home.mortarflow.R;
 import home.mortarflow.application.InjectorService;
 import home.mortarflow.presentation.view.paths.FirstPath;
-import home.mortarflow.utils.flow.FramePathContainerView;
 import home.mortarflow.utils.flow.GsonParceler;
 import home.mortarflow.utils.flow.HandlesBack;
 import home.mortarflow.utils.mortarflow.MortarScreenSwitcherFrame;
@@ -71,8 +67,7 @@ public class MainActivity
         FlowDelegate.NonConfigurationInstance nonConfig = (FlowDelegate.NonConfigurationInstance) getLastCustomNonConfigurationInstance();
         handlesBack = (HandlesBack) framePathContainerView;
         flowSupport = FlowDelegate.onCreate(nonConfig, getIntent(), savedInstanceState, parceler, History
-                .emptyBuilder()
-                .push(new FirstPath(5))
+                .emptyBuilder().push(new FirstPath(R.string.parameter))
                 .build(), this);
     }
 
