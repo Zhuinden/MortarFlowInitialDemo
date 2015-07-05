@@ -35,6 +35,10 @@ v0.5 - What is done:
 
 - Removed unnecessary code from screen scoper and some other stuff.
  
+v0.6 - What is done:
+
+- Added `getScopeName()` method to `BasePath` (and the necessary changes to `MortarContextFactory`). to allow multiple instances of the same Path with different parameters.
+ 
 WHAT TO DO NEXT:
 
 - Why do I need to keep track of the presenter in the module? That shouldn't be necessary if I re-use the same module/component thanks to the Mortar Scope. Odd.
