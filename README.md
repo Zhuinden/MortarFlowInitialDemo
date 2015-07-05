@@ -1,19 +1,23 @@
 # MortarFlowInitialDemo
 This is the v0.5 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
 
-v0.2 - What is done:
+v0.1 - What is done:
 
 - It literally has just two Paths, so it's not confusing as heck
 
 - movement from one path to the other path within two corresponding Custom Views (click event in FirstView)
 
-- the custom views are bound to the Path Context (yeah, that was bugged in the sample and I had to fix it, go figure)
+- the custom views are bound to the Path Context
 
 - Mortar scopes are set up, and Flow is set up
 
 - It has all the classes from the samples to support Mortar scopes within the Path Context
 
 - Some basic Dagger2 stuff is set up for example, nothing special really
+
+v0.2 - What is done:
+
+ - Properly bind the first PATH context to the first view, it was a bug in `AppCompatActivity` as per the Flow github issue (using App context's inflater service instead)
 
 v0.3 - What is done:
 
