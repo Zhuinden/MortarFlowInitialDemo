@@ -8,6 +8,7 @@ import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import flow.Flow;
+import flow.path.Path;
 import home.mortarflow.R;
 import home.mortarflow.application.InjectorService;
 import home.mortarflow.injection.components.ApplicationComponent;
@@ -21,6 +22,8 @@ import mortar.ViewPresenter;
  */
 public class FirstPath
         extends BasePath {
+    public static final String TAG = FirstPath.class.getSimpleName();
+
     public final int parameter;
 
     public FirstPath(int parameter) {
@@ -60,6 +63,11 @@ public class FirstPath
                 .firstViewModule(new FirstPath.FirstViewModule(parameter))
                 .build();
         return firstViewComponent;
+    }
+
+    @Override
+    public String getScopeName() {
+        return TAG + "_" + parameter;
     }
 
     @ViewScope //needed
@@ -127,7 +135,12 @@ public class FirstPath
         }
 
         public void goToNextActivity() {
-            Flow.get(getView()).set(new SecondPath());
+            FirstPath firstPath = Path.get(getView().getContext());
+            if(firstPath.parameter != R.string.hello_world) {
+                Flow.get(getView()).set(new FirstPath(R.string.hello_world));
+            } else {
+                Flow.get(getView()).set(new SecondPath());
+            }
         }
     }
 }

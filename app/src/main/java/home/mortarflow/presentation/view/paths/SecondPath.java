@@ -19,6 +19,8 @@ import mortar.ViewPresenter;
  */
 public class SecondPath
         extends BasePath {
+    public static final String TAG = SecondPath.class.getSimpleName();
+
     @Override
     public int getLayout() {
         return R.layout.path_second;
@@ -30,6 +32,11 @@ public class SecondPath
                 .applicationComponent(InjectorService.obtain())
                 .secondViewModule(new SecondViewModule())
                 .build();
+    }
+
+    @Override
+    public String getScopeName() {
+        return TAG;
     }
 
     @ViewScope

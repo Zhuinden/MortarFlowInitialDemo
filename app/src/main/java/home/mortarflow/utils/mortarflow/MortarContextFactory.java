@@ -6,8 +6,10 @@ package home.mortarflow.utils.mortarflow;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.view.LayoutInflater;
+
 import flow.path.Path;
 import flow.path.PathContextFactory;
+import home.mortarflow.utils.custom_path.BasePath;
 import mortar.MortarScope;
 
 public final class MortarContextFactory implements PathContextFactory {
@@ -17,8 +19,8 @@ public final class MortarContextFactory implements PathContextFactory {
     }
 
     @Override public Context setUpContext(Path path, Context parentContext) {
-        MortarScope screenScope =
-                screenScoper.getScreenScope(parentContext, path.getClass().getName(), path);
+        BasePath basePath = (BasePath) path;
+        MortarScope screenScope = screenScoper.getScreenScope(parentContext, basePath.getScopeName(), path);
         return new TearDownContext(parentContext, screenScope);
     }
 

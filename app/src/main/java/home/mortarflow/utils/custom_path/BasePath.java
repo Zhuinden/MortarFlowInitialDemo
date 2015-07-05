@@ -10,4 +10,6 @@ public abstract class BasePath
     public abstract int getLayout();
 
     public abstract Object createComponent();
+
+    public abstract String getScopeName();
 }
