@@ -507,14 +507,9 @@ So what's up?
                 extends ViewPresenter<FirstView> {
             public static final String TAG = FirstViewPresenter.class.getSimpleName();
     
-            public FirstViewPresenter() {
-                Log.d(TAG, "First View Presenter created: " + toString());
-            }
-    
             @Override
             protected void onSave(Bundle outState) {
                 super.onSave(outState);
-                Log.d(TAG, "On Save called: " + toString());
                 FirstView firstView = getView();
                 outState.putString("input", firstView.getInput());
             }
@@ -522,7 +517,6 @@ So what's up?
             @Override
             protected void onLoad(Bundle savedInstanceState) {
                 super.onLoad(savedInstanceState);
-                Log.d(TAG, "On Load called: " + toString());
                 if(!hasView()) {
                     return;
                 }
@@ -652,7 +646,6 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
         @Override
         protected void onFinishInflate() {
             super.onFinishInflate();
-            Log.d(TAG, "On Finished Inflate: " + this.toString());
             ButterKnife.bind(this);
             dataDisplay.setText(data);
         }
@@ -660,7 +653,6 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
         @Override
         protected void onAttachedToWindow() {
             super.onAttachedToWindow();
-            Log.d(TAG, "On Attached to Window: " + this.toString());
             if(firstViewPresenter != null) { //TODO: fix rendering
                 firstViewPresenter.takeView(this);
             }
@@ -668,7 +660,6 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
     
         @Override
         protected void onDetachedFromWindow() {
-            Log.d(TAG, "On Detached from Window: " + this.toString());
             if(firstViewPresenter != null) { //TODO: fix rendering
                 firstViewPresenter.dropView(this);
             }
@@ -677,12 +668,10 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
         }
     
         public String getInput() {
-            Log.d(TAG, "Get Input: " + this.toString());
             return input.getText().toString();
         }
     
         public void setInput(String inputText) {
-            Log.d(TAG, "Set Input: " + inputText + " " + this.toString());
             this.input.setText(inputText);
         }
     }
@@ -731,10 +720,6 @@ I'll show the other Path and other View because it's more concise.
         public static class SecondViewPresenter
                 extends ViewPresenter<SecondView> {
             public static final String TAG = SecondViewPresenter.class.getSimpleName();
-    
-            public SecondViewPresenter() {
-                Log.d(TAG, "Second View Presenter created: " + toString());
-            }
     
             @Override
             protected void onSave(Bundle outState) {
@@ -786,13 +771,11 @@ and
                 Log.wtf(TAG, "This happens only in rendering.");
             }
             SecondPath secondPath = Path.get(context);
-            Log.d(TAG, "SECOND PATH: " + secondPath);
         }
     
         @Override
         protected void onFinishInflate() {
             super.onFinishInflate();
-            Log.d(TAG, "SECOND VIEW CONTEXT IS: " + getContext().toString());
         }
     
         @Override
@@ -813,3 +796,9 @@ and
     }
     
 And with that, it works!
+
+TO-DO list:
+
+- Create an example for "subflows", which are essentially supposedly a  `MortarSwitcherFrame`inside a new type of `MortarSwitcherFrame` that redefines the `HandlesBack onBackPressed()` method to check in its child first. The subcontainer probably also needs to be inflated manually with its own path.
+
+- Maaaybe figure out the `MasterDetailContainer` example, because that one is magic.
