@@ -410,3 +410,402 @@ So that's the first part for today. To-do list:
 - Module + Components for providing data
 
 - Make new guide once those are actually done
+
+
+GUIDE UPDATE:
+
+This is a continuation of [Basics of experimenting with setting up Mortar + Flow (Part 1)](https://www.reddit.com/r/androiddev/comments/3bte7p/basics_of_experimenting_with_setting_up_mortar/)
+
+If you don't remember, the previous state had the following:
+
+- Two paths, going from first path to second path
+
+- set up root and activity Mortar scopes
+
+- set up Flow and FlowDelegate in MainActivity
+
+- set up PathContext in a working fashion, also including a fix for the `AppCompatActivity cloneInContext()` bug
+
+- Custom Views that can access their Path from the context as such
+
+It had the following missing:
+
+- ViewPresenters for the Paths/Views
+
+- Components/Modules to inject data into view
+
+- Providing the view-scoped component from the MortarScope to survive configuration change
+
+So what's up?
+
+1.) After looking a lot at viewpresenters and components, you just need to provide an implementation of the view presenter, and specify your component and module. It's pretty straightforward at first.
+
+    public class FirstPath
+            extends BasePath {
+        public final int parameter;
+    
+        public FirstPath(int parameter) {
+            this.parameter = parameter;
+        }
+    
+        //hashcode, equals 
+
+        @Override
+        public int getLayout() {
+            return R.layout.path_first;
+        }
+    
+        @Override
+        public FirstViewComponent createComponent() {
+            FirstPath.FirstViewComponent firstViewComponent = DaggerFirstPath_FirstViewComponent.builder()
+                    .applicationComponent(InjectorService.obtain())
+                    .firstViewModule(new FirstPath.FirstViewModule(parameter))
+                    .build();
+            return firstViewComponent;
+        }
+    
+        @ViewScope //needed
+        @Component(dependencies = {ApplicationComponent.class}, modules = {FirstViewModule.class})
+        public interface FirstViewComponent
+                extends ApplicationComponent {
+            String data();
+    
+            FirstViewPresenter firstViewPresenter();
+    
+            void inject(FirstView firstView);
+        }
+    
+        @Module
+        public static class FirstViewModule {
+            private int parameter;
+    
+            private FirstViewPresenter firstViewPresenter;
+    
+            public FirstViewModule(int parameter) {
+                this.parameter = parameter;
+            }
+    
+            @Provides
+            public String data(Context context) {
+                return context.getString(parameter);
+            }
+    
+            @Provides
+            public FirstViewPresenter firstViewPresenter() {
+                if(firstViewPresenter == null) { //TODO: I still don't know why this is necessary, lol.
+                    this.firstViewPresenter = new FirstViewPresenter();
+                }
+                return firstViewPresenter;
+            }
+        }
+    
+        public static class FirstViewPresenter
+                extends ViewPresenter<FirstView> {
+            public static final String TAG = FirstViewPresenter.class.getSimpleName();
+    
+            public FirstViewPresenter() {
+                Log.d(TAG, "First View Presenter created: " + toString());
+            }
+    
+            @Override
+            protected void onSave(Bundle outState) {
+                super.onSave(outState);
+                Log.d(TAG, "On Save called: " + toString());
+                FirstView firstView = getView();
+                outState.putString("input", firstView.getInput());
+            }
+    
+            @Override
+            protected void onLoad(Bundle savedInstanceState) {
+                super.onLoad(savedInstanceState);
+                Log.d(TAG, "On Load called: " + toString());
+                if(!hasView()) {
+                    return;
+                }
+                FirstView firstView = getView();
+                if(savedInstanceState != null) { //needed check
+                    firstView.setInput(savedInstanceState.getString("input"));
+                }
+            }
+    
+            public void goToNextActivity() {
+                Flow.get(getView()).set(new SecondPath());
+            }
+        }
+    }
+
+Not sure why I have to keep track of the presenter instance; normally the `@ViewScope` would allow it to be created only once per scope, but apparently it doesn't really care about such "petty things" and recreates the presenter anyways. So I keep it in a variable. **If you know why this is needed, then don't hesitate to tell me**.
+    
+The magic method calls are actually the fact that I have removed the `@Layout` annotation because to be frank, this runtime annotation processing bugs me to death - it makes the code very lengthy because you have to cache it, otherwise it's slow. And that I made an `InjectorService.obtain()` call to get the `ApplicationComponent` (component dependency) **without** a context, but I'm getting it directly from the root scope.
+
+    public static ApplicationComponent obtain() {
+        return ((InjectorService) MortarScope.getScope(ApplicationHolder.INSTANCE.getApplication())
+                .getService(TAG)).getInjector();
+    }
+
+and
+
+    public abstract class BasePath
+            extends Path {
+        public abstract int getLayout();
+    
+        public abstract Object createComponent();
+    }
+    
+Wait, what? How do you even use that? Apparently the `ScreenScoper` was responsible for parsing the `@WithModule` and `@WithModuleFactory` annotations to bind the `ObjectGraphService` into the Mortar Scope, so that's where you need to set your component too. If you check the original `ScreenScoper`, I removed a bunch of Dagger1 and annotation processing related stuff and made it much shorter (and readable).
+
+    /**
+     * Creates {@link MortarScope}s for screens.
+     */
+    public class ScreenScoper {
+        public MortarScope getScreenScope(Context context, String name, Object screen) {
+            MortarScope parentScope = MortarScope.getScope(context);
+            return getScreenScope(parentScope, name, screen);
+        }
+    
+        /**
+         * Finds or creates the scope for the given screen.
+         */
+        public MortarScope getScreenScope(MortarScope parentScope, final String name, final Object screen) {
+            MortarScope childScope = parentScope.findChild(name);
+            if (childScope == null) {
+                BasePath basePath = (BasePath) screen;
+                childScope = parentScope.buildChild()
+                        .withService(DaggerService.TAG, basePath.createComponent())
+                        .build(name);
+            }
+            return childScope;
+        }
+    }
+
+The other change is in `SimplePathContainer`, as instead of ripping out the value of the `@Layout`annotation, it just calls the `getLayout()` method.
+
+To make the `Component` accessible, I added a `DaggerService` method that essentially just returns the component, and casts it to `T` aka whatever you specify the return value to be. Not type-safe? Well, the `ScreenScoper` cannot really parametrize the modules, so the Path needs to know, but I didn't bother with `T` binding the BasePath. It still works fine.
+
+    public class DaggerService {
+        public static final String TAG = DaggerService.class.getSimpleName();
+    
+        @SuppressWarnings("unchecked")
+        public static <T> T getComponent(Context context) {
+            //noinspection ResourceType
+            return (T) context.getSystemService(TAG);
+        }
+    }
+
+2.) Now let's accomodate the Custom View with the new setup of our view scoped components from within the `FirstView` custom view, and inject data into it!
+
+    public class FirstView
+            extends LinearLayout {
+        public static final String TAG = FirstView.class.getSimpleName();
+    
+        @Inject
+        FirstPath.FirstViewPresenter firstViewPresenter;
+    
+        @Inject
+        String data;
+    
+        @Bind(R.id.path_first_data)
+        TextView dataDisplay;
+    
+        @Bind(R.id.path_first_input)
+        EditText input;
+    
+        @OnClick(R.id.path_first_button)
+        public void onClickButton() {
+            firstViewPresenter.goToNextActivity();
+        }
+    
+        public FirstView(Context context) {
+            super(context);
+            init(context);
+        }
+    
+        public FirstView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            init(context);
+        }
+    
+        public FirstView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            init(context);
+        }
+    
+        @TargetApi(21)
+        public FirstView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+            init(context);
+        }
+    
+        private void init(Context context) {
+            try { //TODO: fix rendering preview
+                FirstPath.FirstViewComponent firstViewComponent = DaggerService.getComponent(context);
+                firstViewComponent.inject(this);
+            } catch(java.lang.UnsupportedOperationException e) {
+                Log.wtf(TAG, "This happens only in rendering.");
+            }
+        }
+    
+        @Override
+        protected void onFinishInflate() {
+            super.onFinishInflate();
+            Log.d(TAG, "On Finished Inflate: " + this.toString());
+            ButterKnife.bind(this);
+            dataDisplay.setText(data);
+        }
+    
+        @Override
+        protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            Log.d(TAG, "On Attached to Window: " + this.toString());
+            if(firstViewPresenter != null) { //TODO: fix rendering
+                firstViewPresenter.takeView(this);
+            }
+        }
+    
+        @Override
+        protected void onDetachedFromWindow() {
+            Log.d(TAG, "On Detached from Window: " + this.toString());
+            if(firstViewPresenter != null) { //TODO: fix rendering
+                firstViewPresenter.dropView(this);
+            }
+            ButterKnife.unbind(this);
+            super.onDetachedFromWindow();
+        }
+    
+        public String getInput() {
+            Log.d(TAG, "Get Input: " + this.toString());
+            return input.getText().toString();
+        }
+    
+        public void setInput(String inputText) {
+            Log.d(TAG, "Set Input: " + inputText + " " + this.toString());
+            this.input.setText(inputText);
+        }
+    }
+    
+That `UnsupportedOperationException` and the `presenter` being `null` happens when Android Studio's preview renderer attempts to inflate the layout, then crashes out because of the `context.getSystemService()` call, and then as the dagger injector component isn't available, the `presenters` won't be displayed either. Whatev', right? At least it works once you catch the exceptions and add two null-checks.
+
+I'll show the other Path and other View because it's more concise.
+
+    public class SecondPath
+            extends BasePath {
+        @Override
+        public int getLayout() {
+            return R.layout.path_second;
+        }
+    
+        @Override
+        public SecondPath.SecondViewComponent createComponent() {
+            return DaggerSecondPath_SecondViewComponent.builder()
+                    .applicationComponent(InjectorService.obtain())
+                    .secondViewModule(new SecondViewModule())
+                    .build();
+        }
+    
+        @ViewScope
+        @Component(dependencies = {ApplicationComponent.class}, modules = {SecondPath.SecondViewModule.class})
+        public interface SecondViewComponent
+                extends ApplicationComponent {
+            SecondViewPresenter secondViewPresenter();
+    
+            void inject(SecondView secondView);
+        }
+    
+        @Module
+        public static class SecondViewModule {
+            private SecondViewPresenter secondViewPresenter;
+    
+            @Provides
+            public SecondViewPresenter secondViewPresenter() {
+                if(secondViewPresenter == null) {
+                    secondViewPresenter = new SecondViewPresenter();
+                }
+                return secondViewPresenter;
+            }
+        }
+    
+        public static class SecondViewPresenter
+                extends ViewPresenter<SecondView> {
+            public static final String TAG = SecondViewPresenter.class.getSimpleName();
+    
+            public SecondViewPresenter() {
+                Log.d(TAG, "Second View Presenter created: " + toString());
+            }
+    
+            @Override
+            protected void onSave(Bundle outState) {
+                super.onSave(outState);
+            }
+    
+            @Override
+            protected void onLoad(Bundle savedInstanceState) {
+                super.onLoad(savedInstanceState);
+            }
+        }
+    }
+    
+and
+
+    public class SecondView
+            extends LinearLayout {
+        public static final String TAG = SecondView.class.getSimpleName();
+    
+        @Inject
+        public SecondPath.SecondViewPresenter secondViewPresenter;
+    
+        public SecondView(Context context) {
+            super(context);
+            init(context);
+        }
+    
+        public SecondView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            init(context);
+        }
+    
+        public SecondView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            init(context);
+        }
+    
+        @TargetApi(21)
+        public SecondView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+            init(context);
+        }
+    
+        private void init(Context context) {
+            try { //TODO: fix rendering preview
+                SecondPath.SecondViewComponent secondViewComponent = DaggerService.getComponent(context);
+                secondViewComponent.inject(this);
+            } catch(java.lang.UnsupportedOperationException e) {
+                Log.wtf(TAG, "This happens only in rendering.");
+            }
+            SecondPath secondPath = Path.get(context);
+            Log.d(TAG, "SECOND PATH: " + secondPath);
+        }
+    
+        @Override
+        protected void onFinishInflate() {
+            super.onFinishInflate();
+            Log.d(TAG, "SECOND VIEW CONTEXT IS: " + getContext().toString());
+        }
+    
+        @Override
+        protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            if(secondViewPresenter != null) {
+                secondViewPresenter.takeView(this);
+            }
+        }
+    
+        @Override
+        protected void onDetachedFromWindow() {
+            if(secondViewPresenter != null) {
+                secondViewPresenter.dropView(this);
+            }
+            super.onDetachedFromWindow();
+        }
+    }
+    
+And with that, it works!
