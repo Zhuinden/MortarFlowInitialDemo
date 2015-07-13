@@ -50,14 +50,10 @@ public class SecondPath
 
     @Module
     public static class SecondViewModule {
-        private SecondViewPresenter secondViewPresenter;
-
         @Provides
+        @ViewScope
         public SecondViewPresenter secondViewPresenter() {
-            if(secondViewPresenter == null) {
-                secondViewPresenter = new SecondViewPresenter();
-            }
-            return secondViewPresenter;
+            return new SecondViewPresenter();
         }
     }
 

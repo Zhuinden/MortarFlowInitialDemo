@@ -97,11 +97,9 @@ public class FirstPath
         }
 
         @Provides
+        @ViewScope
         public FirstViewPresenter firstViewPresenter() {
-            if(firstViewPresenter == null) { //TODO: I still don't know why this is necessary, lol.
-                this.firstViewPresenter = new FirstViewPresenter();
-            }
-            return firstViewPresenter;
+            return new FirstViewPresenter();
         }
     }
 

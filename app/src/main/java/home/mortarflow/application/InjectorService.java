@@ -5,16 +5,6 @@ import android.content.Context;
 import home.mortarflow.injection.components.ApplicationComponent;
 import home.mortarflow.injection.components.DaggerApplicationComponent;
 import home.mortarflow.injection.modules.application.AppContextModule;
-import home.mortarflow.injection.subcomponents.application.AppContextComponent;
-import home.mortarflow.injection.subcomponents.application.AppDataComponent;
-import home.mortarflow.injection.subcomponents.application.AppDomainComponent;
-import home.mortarflow.injection.subcomponents.application.AppPresentationComponent;
-import home.mortarflow.injection.subcomponents.application.AppUtilsComponent;
-import home.mortarflow.injection.subcomponents.application.DaggerAppContextComponent;
-import home.mortarflow.injection.subcomponents.application.DaggerAppDataComponent;
-import home.mortarflow.injection.subcomponents.application.DaggerAppDomainComponent;
-import home.mortarflow.injection.subcomponents.application.DaggerAppPresentationComponent;
-import home.mortarflow.injection.subcomponents.application.DaggerAppUtilsComponent;
 import mortar.MortarScope;
 
 /**
@@ -27,20 +17,8 @@ public class InjectorService {
 
     InjectorService(CustomApplication customApplication) {
         AppContextModule appContextModule = new AppContextModule(customApplication);
-        AppContextComponent appContextComponent = DaggerAppContextComponent.builder()
-                .appContextModule(appContextModule)
-                .build();
-        AppDataComponent appDataComponent = DaggerAppDataComponent.builder().build();
-        AppDomainComponent appDomainComponent = DaggerAppDomainComponent.builder().build();
-        AppPresentationComponent appPresentationComponent = DaggerAppPresentationComponent.builder()
-                .build();
-        AppUtilsComponent appUtilsComponent = DaggerAppUtilsComponent.builder().build();
         applicationComponent = DaggerApplicationComponent.builder()
-                .appContextComponent(appContextComponent)
-                .appDataComponent(appDataComponent)
-                .appDomainComponent(appDomainComponent)
-                .appPresentationComponent(appPresentationComponent)
-                .appUtilsComponent(appUtilsComponent)
+                .appContextModule(appContextModule)
                 .build();
     }
 
