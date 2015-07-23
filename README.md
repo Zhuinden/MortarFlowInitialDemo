@@ -157,14 +157,8 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
         InjectorService(CustomApplication customApplication) {
             AppContextModule appContextModule = new AppContextModule(customApplication);
             applicationComponent = DaggerApplicationComponent.builder()
-                    .appContextComponent(DaggerAppContextComponent.builder()
                             .appContextModule(appContextModule)
-                            .build())
-                    .appDataComponent(DaggerAppDataComponent.create())
-                    .appDomainComponent(DaggerAppDomainComponent.create())
-                    .appPresentationComponent(DaggerAppPresentationComponent.create())
-                    .appUtilsComponent(DaggerAppUtilsComponent.create())
-                    .build();
+                            .build();
         }
     
         public ApplicationComponent getInjector() { //return the app component to inject `this` with it
