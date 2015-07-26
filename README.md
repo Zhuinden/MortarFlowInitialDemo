@@ -41,8 +41,6 @@ v0.6 - What is done:
  
 WHAT TO DO NEXT:
 
-- Why do I need to keep track of the presenter in the module? That shouldn't be necessary if I re-use the same module/component thanks to the Mortar Scope. Odd.
-
 - There must be a way to make the Path classes a bit less monolithic.
 
 NOTE:
@@ -159,14 +157,8 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
         InjectorService(CustomApplication customApplication) {
             AppContextModule appContextModule = new AppContextModule(customApplication);
             applicationComponent = DaggerApplicationComponent.builder()
-                    .appContextComponent(DaggerAppContextComponent.builder()
                             .appContextModule(appContextModule)
-                            .build())
-                    .appDataComponent(DaggerAppDataComponent.create())
-                    .appDomainComponent(DaggerAppDomainComponent.create())
-                    .appPresentationComponent(DaggerAppPresentationComponent.create())
-                    .appUtilsComponent(DaggerAppUtilsComponent.create())
-                    .build();
+                            .build();
         }
     
         public ApplicationComponent getInjector() { //return the app component to inject `this` with it
@@ -486,9 +478,7 @@ So what's up?
         @Module
         public static class FirstViewModule {
             private int parameter;
-    
-            private FirstViewPresenter firstViewPresenter;
-    
+   
             public FirstViewModule(int parameter) {
                 this.parameter = parameter;
             }
@@ -499,10 +489,8 @@ So what's up?
             }
     
             @Provides
+            @ViewScope //this makes it get a viewscoped-provider
             public FirstViewPresenter firstViewPresenter() {
-                if(firstViewPresenter == null) { //TODO: I still don't know why this is necessary, lol.
-                    this.firstViewPresenter = new FirstViewPresenter();
-                }
                 return firstViewPresenter;
             }
         }
