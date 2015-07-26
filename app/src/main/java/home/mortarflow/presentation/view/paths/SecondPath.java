@@ -12,6 +12,8 @@ import home.mortarflow.injection.components.ApplicationComponent;
 import home.mortarflow.injection.scope.ViewScope;
 import home.mortarflow.presentation.view.views.SecondView;
 import home.mortarflow.utils.custom_path.BasePath;
+import home.mortarflow.utils.custom_path.DaggerService;
+import mortar.MortarScope;
 import mortar.ViewPresenter;
 
 /**
@@ -46,6 +48,8 @@ public class SecondPath
         SecondViewPresenter secondViewPresenter();
 
         void inject(SecondView secondView);
+
+        void inject(SecondViewPresenter secondViewPresenter);
     }
 
     @Module
@@ -63,6 +67,21 @@ public class SecondPath
 
         public SecondViewPresenter() {
             Log.d(TAG, "Second View Presenter created: " + toString());
+        }
+
+        @Override
+        protected void onEnterScope(MortarScope scope) {
+            super.onEnterScope(scope);
+            Log.d(TAG, this.toString() + ": " + "On Enter Scope: " + scope.toString());
+            SecondViewComponent secondViewComponent = scope.getService(DaggerService.TAG);
+            secondViewComponent.inject(this);
+            Log.wtf(TAG, "Data and other objects injected to second presenter.");
+        }
+
+        @Override
+        protected void onExitScope() {
+            super.onExitScope();
+            Log.d(TAG, this.toString() + ": On Exit Scope.");
         }
 
         @Override

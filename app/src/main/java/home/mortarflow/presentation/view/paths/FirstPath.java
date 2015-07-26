@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import javax.inject.Inject;
+
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
@@ -15,6 +17,8 @@ import home.mortarflow.injection.components.ApplicationComponent;
 import home.mortarflow.injection.scope.ViewScope;
 import home.mortarflow.presentation.view.views.FirstView;
 import home.mortarflow.utils.custom_path.BasePath;
+import home.mortarflow.utils.custom_path.DaggerService;
+import mortar.MortarScope;
 import mortar.ViewPresenter;
 
 /**
@@ -79,13 +83,13 @@ public class FirstPath
         FirstViewPresenter firstViewPresenter();
 
         void inject(FirstView firstView);
+
+        void inject(FirstViewPresenter firstViewPresenter);
     }
 
     @Module
     public static class FirstViewModule {
         private int parameter;
-
-        private FirstViewPresenter firstViewPresenter;
 
         public FirstViewModule(int parameter) {
             this.parameter = parameter;
@@ -107,8 +111,26 @@ public class FirstPath
             extends ViewPresenter<FirstView> {
         public static final String TAG = FirstViewPresenter.class.getSimpleName();
 
+        @Inject
+        String data;
+
         public FirstViewPresenter() {
             Log.d(TAG, "First View Presenter created: " + toString());
+        }
+
+        @Override
+        protected void onEnterScope(MortarScope scope) {
+            super.onEnterScope(scope);
+            Log.d(TAG, this.toString() + ": " + "On Enter Scope: " + scope.toString());
+            FirstViewComponent firstViewComponent = scope.getService(DaggerService.TAG);
+            firstViewComponent.inject(this);
+            Log.wtf(TAG, "Data [" + data + "] and other objects injected to first presenter.");
+        }
+
+        @Override
+        protected void onExitScope() {
+            super.onExitScope();
+            Log.d(TAG, this.toString() + ": On Exit Scope.");
         }
 
         @Override
