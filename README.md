@@ -730,11 +730,9 @@ I'll show the other Path and other View because it's more concise.
             private SecondViewPresenter secondViewPresenter;
     
             @Provides
+            @ViewScope
             public SecondViewPresenter secondViewPresenter() {
-                if(secondViewPresenter == null) {
-                    secondViewPresenter = new SecondViewPresenter();
-                }
-                return secondViewPresenter;
+                return new SecondViewPresenter();
             }
         }
     
