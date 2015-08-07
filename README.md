@@ -57,6 +57,7 @@ Please note that you also have to take the `/res/values/ids.xml` file as well, a
 
 2.) [MORTAR] Set up the Root Scope in your Application. Don't forget to add the custom application class to the manifest when you do. 
     
+```java
     public class CustomApplication
             extends Application {
         public static final String TAG = CustomApplication.class.getSimpleName();
@@ -81,11 +82,13 @@ Please note that you also have to take the `/res/values/ids.xml` file as well, a
             return super.getSystemService(name); // otherwise return application level context system service
         }
     }
+```
 
 Now as you can see, you can bind "services" to the scope by a string tag. If you override `getSystemService()` on context to first seek out classes from the mortar scope, you'll be able to provide them to your Activities and other contexts, and most importantly to every View directly that has a PathContext.
     
 3.) [MORTAR] Now set up the activity mortar scope.
 
+```java
     public class MainActivity
             extends AppCompatActivity 
             // ...
@@ -146,9 +149,11 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
         }
         ...
     }
+```
 
 3.1.) [MORTAR + DAGGER] You might be wondering, InjectorService is just an `ApplicationComponent` that's made available through Mortar.
 
+```java
     public class InjectorService {
         public static final String TAG = InjectorService.class.getSimpleName();
     
@@ -171,9 +176,11 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
             return (InjectorService)context.getSystemService(TAG);
         }
     }
+```
     
 4.) [FLOW] Once you've set up Mortar, you're ready to rumble. You need to set up all the **...**ed areas for Flow to function properly. Most of this is based on Samples.
 
+```java
     public class MainActivity
             extends AppCompatActivity
             implements Flow.Dispatcher { //needed for FLOW SUPPORT
@@ -282,9 +289,11 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
             });
         }
     }
+```
     
 5.) [FLOW-PATH] Create some `Path` subclasses that represent your History within your application. Paths also have a `Context` associated with them which is bound to the View that is inflated based on the resource identifier specified in the annotation. This annotation magic is done within `SimplePathContainerView`, so if you want to replace it with an interface in a `BasePath` of sorts, then you can if you want.
 
+```java
     @Layout(R.layout.path_first)
     public class FirstPath extends Path {
         public final int parameter;
@@ -314,11 +323,13 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
             return result;
         }
     }
+```
 
 So this is just a Path subclass with its own HashCode and Equals implementation, and it can get parameters if you want.
 
 6.) [FLOW+MORTAR] Use the Flow Path to manipulate Flow to reach a particular state of the app, while use Mortar to access the Services in a given scope.
     
+```java
     public class FirstView extends LinearLayout {
         public static final String TAG = FirstView.class.getSimpleName();
     
@@ -360,9 +371,11 @@ So this is just a Path subclass with its own HashCode and Equals implementation,
             ButterKnife.unbind(this);
         }
     }
+```
     
 and
 
+```java
     public class SecondView extends LinearLayout {
         public SecondView(Context context) {
             super(context);
@@ -389,9 +402,11 @@ and
             System.out.println("SECOND PATH: " + secondPath); //SecondPath :)
         }
     }
+```
 
 and
 
+```java
     <?xml version="1.0" encoding="utf-8"?>
     <home.mortarflow.presentation.view.views.SecondView xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="match_parent"
@@ -402,6 +417,7 @@ and
             android:layout_height="wrap_content"
             android:text="Hello from SECOND path!"/>
     </home.mortarflow.presentation.view.views.SecondView>
+```
     
 So that's the first part for today. To-do list:
 
@@ -440,6 +456,7 @@ So what's up?
 
 1.) After looking a lot at viewpresenters and components, you just need to provide an implementation of the view presenter, and specify your component and module. It's pretty straightforward at first.
 
+```java
     public class FirstPath
             extends BasePath {
         public final int parameter;
@@ -523,27 +540,33 @@ So what's up?
             }
         }
     }
+```
 
 Not sure why I have to keep track of the presenter instance; normally the `@ViewScope` would allow it to be created only once per scope, but apparently it doesn't really care about such "petty things" and recreates the presenter anyways. So I keep it in a variable. **If you know why this is needed, then don't hesitate to tell me**.
     
 The magic method calls are actually the fact that I have removed the `@Layout` annotation because to be frank, this runtime annotation processing bugs me to death - it makes the code very lengthy because you have to cache it, otherwise it's slow. And that I made an `InjectorService.obtain()` call to get the `ApplicationComponent` (component dependency) **without** a context, but I'm getting it directly from the root scope.
 
+```java
     public static ApplicationComponent obtain() {
         return ((InjectorService) MortarScope.getScope(ApplicationHolder.INSTANCE.getApplication())
                 .getService(TAG)).getInjector();
     }
+```
 
 and
 
+```java
     public abstract class BasePath
             extends Path {
         public abstract int getLayout();
     
         public abstract Object createComponent();
     }
+```
     
 Wait, what? How do you even use that? Apparently the `ScreenScoper` was responsible for parsing the `@WithModule` and `@WithModuleFactory` annotations to bind the `ObjectGraphService` into the Mortar Scope, so that's where you need to set your component too. If you check the original `ScreenScoper`, I removed a bunch of Dagger1 and annotation processing related stuff and made it much shorter (and readable).
 
+```java
     /**
      * Creates {@link MortarScope}s for screens.
      */
@@ -567,11 +590,13 @@ Wait, what? How do you even use that? Apparently the `ScreenScoper` was responsi
             return childScope;
         }
     }
+```
 
 The other change is in `SimplePathContainer`, as instead of ripping out the value of the `@Layout`annotation, it just calls the `getLayout()` method.
 
 To make the `Component` accessible, I added a `DaggerService` method that essentially just returns the component, and casts it to `T` aka whatever you specify the return value to be. Not type-safe? Well, the `ScreenScoper` cannot really parametrize the modules, so the Path needs to know, but I didn't bother with `T` binding the BasePath. It still works fine.
 
+```java
     public class DaggerService {
         public static final String TAG = DaggerService.class.getSimpleName();
     
@@ -581,9 +606,11 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
             return (T) context.getSystemService(TAG);
         }
     }
+```
 
 2.) Now let's accomodate the Custom View with the new setup of our view scoped components from within the `FirstView` custom view, and inject data into it!
 
+```java
     public class FirstView
             extends LinearLayout {
         public static final String TAG = FirstView.class.getSimpleName();
@@ -667,11 +694,13 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
             this.input.setText(inputText);
         }
     }
+```
     
 That `UnsupportedOperationException` and the `presenter` being `null` happens when Android Studio's preview renderer attempts to inflate the layout, then crashes out because of the `context.getSystemService()` call, and then as the dagger injector component isn't available, the `presenters` won't be displayed either. Whatev', right? At least it works once you catch the exceptions and add two null-checks.
 
 I'll show the other Path and other View because it's more concise.
 
+```java
     public class SecondPath
             extends BasePath {
         @Override
@@ -724,9 +753,11 @@ I'll show the other Path and other View because it's more concise.
             }
         }
     }
+```
     
 and
 
+```java    
     public class SecondView
             extends LinearLayout {
         public static final String TAG = SecondView.class.getSimpleName();
@@ -786,6 +817,7 @@ and
             super.onDetachedFromWindow();
         }
     }
+```
     
 And with that, it works!
 
