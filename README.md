@@ -508,7 +508,7 @@ So what's up?
             @Provides
             @ViewScope //this makes it get a viewscoped-provider
             public FirstViewPresenter firstViewPresenter() {
-                return firstViewPresenter;
+                return new FirstViewPresenter();
             }
         }
     
