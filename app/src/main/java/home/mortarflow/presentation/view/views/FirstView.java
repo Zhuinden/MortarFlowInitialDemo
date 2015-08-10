@@ -63,11 +63,9 @@ public class FirstView
     }
 
     private void init(Context context) {
-        try { //TODO: fix rendering preview
+        if(!isInEditMode()) {
             FirstPath.FirstViewComponent firstViewComponent = DaggerService.getComponent(context);
             firstViewComponent.inject(this);
-        } catch(java.lang.UnsupportedOperationException e) {
-            Log.wtf(TAG, "This happens only in rendering.");
         }
     }
 
