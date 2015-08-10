@@ -15,6 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * public class ConversationScreen { ... }
  * </code></pre>
  */
+@Deprecated //using BasePath instead
 @Retention(RUNTIME) @Target(TYPE) public @interface Layout {
     int value();
 }
