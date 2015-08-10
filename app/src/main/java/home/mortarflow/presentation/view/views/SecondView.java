@@ -22,7 +22,7 @@ public class SecondView
     @Inject
     public SecondPath.SecondViewPresenter secondViewPresenter;
 
-    public SecondView(Context context) {
+    public SecondView(Context context) { 
         super(context);
         init(context);
     }
