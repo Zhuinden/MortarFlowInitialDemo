@@ -44,14 +44,13 @@ public class SecondView
     }
 
     private void init(Context context) {
-        try { //TODO: fix rendering preview
+        if(!isInEditMode()) {
             SecondPath.SecondViewComponent secondViewComponent = DaggerService.getComponent(context);
             secondViewComponent.inject(this);
-        } catch(java.lang.UnsupportedOperationException e) {
-            Log.wtf(TAG, "This happens only in rendering.");
+        
+            SecondPath secondPath = Path.get(context);
+            Log.d(TAG, "SECOND PATH: " + secondPath);
         }
-        SecondPath secondPath = Path.get(context);
-        Log.d(TAG, "SECOND PATH: " + secondPath);
     }
 
     @Override
