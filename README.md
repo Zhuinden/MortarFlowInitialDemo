@@ -654,35 +654,37 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
         }
     
         private void init(Context context) {
-            try { //TODO: fix rendering preview
+            if(!isInEditMode()) {
                 FirstPath.FirstViewComponent firstViewComponent = DaggerService.getComponent(context);
                 firstViewComponent.inject(this);
-            } catch(java.lang.UnsupportedOperationException e) {
-                Log.wtf(TAG, "This happens only in rendering.");
             }
         }
     
         @Override
         protected void onFinishInflate() {
             super.onFinishInflate();
-            ButterKnife.bind(this);
-            dataDisplay.setText(data);
+            if(!isInEditMode()) {
+                ButterKnife.bind(this);
+                dataDisplay.setText(data);
+            }
         }
     
         @Override
         protected void onAttachedToWindow() {
             super.onAttachedToWindow();
-            if(firstViewPresenter != null) { //TODO: fix rendering
+            if(firstViewPresenter != null) {
                 firstViewPresenter.takeView(this);
             }
         }
     
         @Override
         protected void onDetachedFromWindow() {
-            if(firstViewPresenter != null) { //TODO: fix rendering
+            if(firstViewPresenter != null) {
                 firstViewPresenter.dropView(this);
             }
-            ButterKnife.unbind(this);
+            if(!isInEditMode()) {
+                ButterKnife.unbind(this);
+            }
             super.onDetachedFromWindow();
         }
     
@@ -785,13 +787,11 @@ and
         }
     
         private void init(Context context) {
-            try { //TODO: fix rendering preview
+            if(!isInEditMode()) {
                 SecondPath.SecondViewComponent secondViewComponent = DaggerService.getComponent(context);
                 secondViewComponent.inject(this);
-            } catch(java.lang.UnsupportedOperationException e) {
-                Log.wtf(TAG, "This happens only in rendering.");
+                SecondPath secondPath = Path.get(context);
             }
-            SecondPath secondPath = Path.get(context);
         }
     
         @Override
