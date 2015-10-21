@@ -542,7 +542,7 @@ So what's up?
     }
 ```
 
-Not sure why I have to keep track of the presenter instance; normally the `@ViewScope` would allow it to be created only once per scope, but apparently it doesn't really care about such "petty things" and recreates the presenter anyways. So I keep it in a variable. **If you know why this is needed, then don't hesitate to tell me**.
+The `@ViewScope` allows the presenter to be created only once per that particular component. Please note that you have to specify the scope on the `@Provides` annotated method too, otherwise it will be unscoped and you'll get a new instance every time you inject, which ruins the whole point of the mortar scope.
     
 The magic method calls are actually the fact that I have removed the `@Layout` annotation because to be frank, this runtime annotation processing bugs me to death - it makes the code very lengthy because you have to cache it, otherwise it's slow. And that I made an `InjectorService.obtain()` call to get the `ApplicationComponent` (component dependency) **without** a context, but I'm getting it directly from the root scope.
 
