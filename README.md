@@ -672,17 +672,15 @@ To make the `Component` accessible, I added a `DaggerService` method that essent
         @Override
         protected void onAttachedToWindow() {
             super.onAttachedToWindow();
-            if(firstViewPresenter != null) {
+            if(!isInEditMode()) {
                 firstViewPresenter.takeView(this);
             }
         }
     
         @Override
         protected void onDetachedFromWindow() {
-            if(firstViewPresenter != null) {
-                firstViewPresenter.dropView(this);
-            }
             if(!isInEditMode()) {
+                firstViewPresenter.dropView(this);
                 ButterKnife.unbind(this);
             }
             super.onDetachedFromWindow();
@@ -802,14 +800,14 @@ and
         @Override
         protected void onAttachedToWindow() {
             super.onAttachedToWindow();
-            if(secondViewPresenter != null) {
+            if(!isInEditMode()) {
                 secondViewPresenter.takeView(this);
             }
         }
     
         @Override
         protected void onDetachedFromWindow() {
-            if(secondViewPresenter != null) {
+            if(!isInEditMode()) {
                 secondViewPresenter.dropView(this);
             }
             super.onDetachedFromWindow();
