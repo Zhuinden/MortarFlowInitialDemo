@@ -727,8 +727,6 @@ I'll show the other Path and other View because it's more concise.
     
         @Module
         public static class SecondViewModule {
-            private SecondViewPresenter secondViewPresenter;
-    
             @Provides
             @ViewScope
             public SecondViewPresenter secondViewPresenter() {
