@@ -815,4 +815,4 @@ TO-DO list:
 
 - Create an example for "subflows", which are essentially supposedly a  `MortarSwitcherFrame`inside a new type of `MortarSwitcherFrame` that redefines the `HandlesBack onBackPressed()` method to check in its child first. The subcontainer probably also needs to be inflated manually with its own path.
 
-- Maaaybe figure out the `MasterDetailContainer` example, because that one is magic.
+- Maaaybe figure out the `MasterDetailContainer` example, because that one is magic. The ones that was deleted in the following gist: https://github.com/square/flow/commit/3ffb3f9f3cd1649d431146530f19394e9d0850bf
