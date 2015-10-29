@@ -43,10 +43,6 @@ WHAT TO DO NEXT:
 
 - There must be a way to make the Path classes a bit less monolithic.
 
-NOTE:
-
- - There's a bunch of weird try-catch null-checks in the FirstView to make previewing the layout work, because otherwise the IDE falls apart with exceptions due to the `context.getSystemService()` call. Seriously.
-
 Okay, so the steps are pretty much the following:
 
 1.) you need all the classes that are in the `utils/flow` and `utils/mortarflow` folder. 
