@@ -49,6 +49,7 @@ v0.7 - What is done:
 WHAT TO DO NEXT:
 
 - There must be a way to make the Path classes a bit less monolithic.
+- Add fix described in https://github.com/square/flow/issues/116
 
 Okay, so the steps are pretty much the following:
 
