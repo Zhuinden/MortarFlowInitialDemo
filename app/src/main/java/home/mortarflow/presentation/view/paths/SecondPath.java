@@ -1,7 +1,11 @@
 package home.mortarflow.presentation.view.paths;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
+
+import javax.inject.Inject;
 
 import dagger.Component;
 import dagger.Module;
@@ -28,18 +32,56 @@ public class SecondPath
         return R.layout.path_second;
     }
 
+    protected SecondViewComponent secondViewComponent;
+
+    @Inject
+    SecondViewPresenter secondViewPresenter;
+
+    public SecondPath() {
+        createAndStoreComponentAndInjectSelf();
+    }
+
     @Override
-    public SecondPath.SecondViewComponent createComponent() {
-        return DaggerSecondPath_SecondViewComponent.builder()
-                .applicationComponent(InjectorService.obtain())
-                .secondViewModule(new SecondViewModule())
-                .build();
+    public SecondPath.SecondViewComponent createAndStoreComponentAndInjectSelf() {
+        if(secondViewComponent == null) {
+            secondViewComponent = DaggerSecondPath_SecondViewComponent.builder()
+                    .applicationComponent(InjectorService.obtain())
+                    .secondViewModule(new SecondViewModule())
+                    .build();
+            secondViewComponent.inject(this);
+        }
+        return secondViewComponent;
     }
 
     @Override
     public String getScopeName() {
         return TAG;
     }
+
+    protected SecondPath(Parcel in) {
+        super(in);
+        secondViewPresenter.onLoad(in.readBundle());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        Bundle presenterState = new Bundle();
+        secondViewPresenter.onSave(presenterState);
+        dest.writeBundle(presenterState);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<SecondPath> CREATOR = new Parcelable.Creator<SecondPath>() {
+        @Override
+        public SecondPath createFromParcel(Parcel in) {
+            return new SecondPath(in);
+        }
+
+        @Override
+        public SecondPath[] newArray(int size) {
+            return new SecondPath[size];
+        }
+    };
 
     @ViewScope
     @Component(dependencies = {ApplicationComponent.class}, modules = {SecondPath.SecondViewModule.class})
@@ -50,6 +92,8 @@ public class SecondPath
         void inject(SecondView secondView);
 
         void inject(SecondViewPresenter secondViewPresenter);
+
+        void inject(SecondPath secondPath);
     }
 
     @Module

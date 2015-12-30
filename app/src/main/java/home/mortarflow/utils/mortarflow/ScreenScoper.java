@@ -23,7 +23,7 @@ public class ScreenScoper {
         if (childScope == null) {
             BasePath basePath = (BasePath) screen;
             childScope = parentScope.buildChild()
-                    .withService(DaggerService.TAG, basePath.createComponent())
+                    .withService(DaggerService.TAG, basePath.createAndStoreComponentAndInjectSelf())
                     .build(name);
         }
         return childScope;

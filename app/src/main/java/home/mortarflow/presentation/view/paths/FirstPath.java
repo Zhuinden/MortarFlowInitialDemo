@@ -2,6 +2,8 @@ package home.mortarflow.presentation.view.paths;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import javax.inject.Inject;
@@ -32,6 +34,7 @@ public class FirstPath
 
     public FirstPath(int parameter) {
         this.parameter = parameter;
+        createAndStoreComponentAndInjectSelf(); //cannot move this to BasePath because the parameter would be 0
     }
 
     @Override
@@ -60,12 +63,20 @@ public class FirstPath
         return R.layout.path_first;
     }
 
+    protected FirstViewComponent firstViewComponent;
+
+    @Inject
+    FirstViewPresenter firstViewPresenter;
+
     @Override
-    public FirstViewComponent createComponent() {
-        FirstPath.FirstViewComponent firstViewComponent = DaggerFirstPath_FirstViewComponent.builder()
-                .applicationComponent(InjectorService.obtain())
-                .firstViewModule(new FirstPath.FirstViewModule(parameter))
-                .build();
+    public FirstViewComponent createAndStoreComponentAndInjectSelf() {
+        if(firstViewComponent == null) {
+            firstViewComponent = DaggerFirstPath_FirstViewComponent.builder()
+                    .applicationComponent(InjectorService.obtain())
+                    .firstViewModule(new FirstPath.FirstViewModule(parameter))
+                    .build();
+            firstViewComponent.inject(this);
+        }
         return firstViewComponent;
     }
 
@@ -73,6 +84,34 @@ public class FirstPath
     public String getScopeName() {
         return TAG + "_" + parameter;
     }
+
+    protected FirstPath(Parcel in) {
+        super(in);
+        parameter = in.readInt();
+        createAndStoreComponentAndInjectSelf();
+        firstViewPresenter.onLoad(in.readBundle());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(parameter);
+        Bundle presenterState = new Bundle();
+        firstViewPresenter.onSave(presenterState);
+        dest.writeBundle(presenterState);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<FirstPath> CREATOR = new Parcelable.Creator<FirstPath>() {
+        @Override
+        public FirstPath createFromParcel(Parcel in) {
+            return new FirstPath(in);
+        }
+
+        @Override
+        public FirstPath[] newArray(int size) {
+            return new FirstPath[size];
+        }
+    };
 
     @ViewScope //needed
     @Component(dependencies = {ApplicationComponent.class}, modules = {FirstViewModule.class})
@@ -85,6 +124,8 @@ public class FirstPath
         void inject(FirstView firstView);
 
         void inject(FirstViewPresenter firstViewPresenter);
+
+        void inject(FirstPath firstPath);
     }
 
     @Module

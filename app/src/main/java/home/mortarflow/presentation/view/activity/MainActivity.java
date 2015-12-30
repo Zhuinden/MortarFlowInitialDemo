@@ -20,6 +20,7 @@ import home.mortarflow.application.InjectorService;
 import home.mortarflow.presentation.view.paths.FirstPath;
 import home.mortarflow.utils.flow.GsonParceler;
 import home.mortarflow.utils.flow.HandlesBack;
+import home.mortarflow.utils.flow.ParcelableParceler;
 import home.mortarflow.utils.mortarflow.MortarScreenSwitcherFrame;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
@@ -60,20 +61,21 @@ public class MainActivity
         }
 
         InjectorService.get(this).getInjector().inject(this); // MORTAR + DAGGER
-        BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState); // MORTAR
 
         //FLOW INIT
-        GsonParceler parceler = new GsonParceler(new Gson());
         FlowDelegate.NonConfigurationInstance nonConfig = (FlowDelegate.NonConfigurationInstance) getLastCustomNonConfigurationInstance();
         handlesBack = (HandlesBack) framePathContainerView;
-        flowSupport = FlowDelegate.onCreate(nonConfig, getIntent(), savedInstanceState, parceler, History
+        flowSupport = FlowDelegate.onCreate(nonConfig, getIntent(), savedInstanceState, new ParcelableParceler(), History
                 .emptyBuilder().push(new FirstPath(R.string.parameter))
                 .build(), this);
+
+        BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState); // MORTAR
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        flowSupport.onSaveInstanceState(outState); // FLOW
         BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState); // MORTAR
     }
 
