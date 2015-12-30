@@ -1,5 +1,5 @@
 # MortarFlowInitialDemo
-This is the v0.6 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
+This is the v0.7 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
 
 v0.1 - What is done:
 
@@ -38,10 +38,18 @@ v0.5 - What is done:
 v0.6 - What is done:
 
 - Added `getScopeName()` method to `BasePath` (and the necessary changes to `MortarContextFactory`). to allow multiple instances of the same Path with different parameters.
+
+v0.7 - What is done:
+
+- Changed `GsonParceler` to `ParcelableParceler` because GsonParceler actually doesn't work.
+- Fixed a bug regarding `flowSupport.onSaveInstanceState()` not being called, and history not being preserved through process death.
+- Changed Paths to Parcelable.
+- Paths now save the presenter state into bundle for process death.
  
 WHAT TO DO NEXT:
 
 - There must be a way to make the Path classes a bit less monolithic.
+- Add fix described in https://github.com/square/flow/issues/116
 
 Okay, so the steps are pretty much the following:
 
@@ -66,7 +74,7 @@ Please note that you also have to take the `/res/values/ids.xml` file as well, a
         }
     
         @Override
-        public Object getSystemService(String name) {
+        public Object getSystemService(String name) { //this is called BEFORE onCreate() on some Samsung devices
             if(rootScope == null) {
                 rootScope = MortarScope.buildRootScope()
                         .withService(InjectorService.TAG, new InjectorService(this))
@@ -214,6 +222,12 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
         }
     
         // ...
+    
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            flowSupport.onSaveInstanceState(outState); // FLOW
+        }
     
         @Override
         public Object onRetainCustomNonConfigurationInstance() {
