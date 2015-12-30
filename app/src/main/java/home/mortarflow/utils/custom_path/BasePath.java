@@ -27,4 +27,23 @@ public abstract class BasePath
     public abstract Object createAndStoreComponentAndInjectSelf();
 
     public abstract String getScopeName();
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == this) {
+            return true;
+        } else if(o == null) {
+            return false;
+        } else if(o instanceof BasePath) {
+            BasePath basePath = (BasePath) o;
+            return basePath.getScopeName().equals(getScopeName());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return getScopeName().hashCode();
+    }
 }
