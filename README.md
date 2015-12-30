@@ -1,5 +1,5 @@
 # MortarFlowInitialDemo
-This is the v0.6 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
+This is the v0.7 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
 
 v0.1 - What is done:
 
@@ -38,6 +38,13 @@ v0.5 - What is done:
 v0.6 - What is done:
 
 - Added `getScopeName()` method to `BasePath` (and the necessary changes to `MortarContextFactory`). to allow multiple instances of the same Path with different parameters.
+
+v0.7 - What is done:
+
+- Changed `GsonParceler` to `ParcelableParceler` because GsonParceler actually doesn't work.
+- Fixed a bug regarding `flowSupport.onSaveInstanceState()` not being called, and history not being preserved through process death.
+- Changed Paths to Parcelable.
+- Paths now save the presenter state into bundle for process death.
  
 WHAT TO DO NEXT:
 
