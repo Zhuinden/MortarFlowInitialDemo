@@ -74,7 +74,7 @@ Please note that you also have to take the `/res/values/ids.xml` file as well, a
         }
     
         @Override
-        public Object getSystemService(String name) {
+        public Object getSystemService(String name) { //this is called BEFORE onCreate() on some Samsung devices
             if(rootScope == null) {
                 rootScope = MortarScope.buildRootScope()
                         .withService(InjectorService.TAG, new InjectorService(this))
