@@ -224,6 +224,12 @@ Now as you can see, you can bind "services" to the scope by a string tag. If you
         // ...
     
         @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            flowSupport.onSaveInstanceState(outState); // FLOW
+        }
+    
+        @Override
         public Object onRetainCustomNonConfigurationInstance() {
             return flowSupport.onRetainNonConfigurationInstance(); // FLOW
         }
