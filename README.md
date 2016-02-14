@@ -1,3 +1,9 @@
+# [DEPRECATED] in favor of Mortar Flow Setup.
+
+https://github.com/Zhuinden/MortarFlowSetup
+
+But the guide here is totally fine to read just so you get a better idea of what's going on.
+
 # MortarFlowInitialDemo
 This is the v0.7 version of setting up Flow and Mortar and Flow-Path. It took a few hours to figure out why the hell path context wasn't working right, but now it does. Doesn't use ViewPresenters and Module/Components yet. That is the next step.
 
